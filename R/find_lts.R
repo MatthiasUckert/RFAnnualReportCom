@@ -9,7 +9,7 @@ find_lts_page <- function(.fst, .phrases) {
   if (nrow(tab) != 1) {
     tab <- tibble::tibble(page = NA_integer_)
   } else {
-    tab <- select(tab, page)
+    tab <- dplyr::select(tab, page)
   }
   
   return(tab)
@@ -30,8 +30,8 @@ find_lts_page_map <- function(.dir, .phrases) {
   
   .path_store <- dpath(.dir, "letter_to_shareholder_pages.xlsx")
   
-  tab <- map_dfr(
-    .x = set_names(fil_fst$path, fil_fst$doc_id), 
+  tab <- purrr::map_dfr(
+    .x = purrr::set_names(fil_fst$path, fil_fst$doc_id), 
     .f = ~ find_lts_page(.x, .phrases), 
     .id = "doc_id"
   )

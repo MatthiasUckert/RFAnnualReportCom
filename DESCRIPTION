@@ -25,4 +25,6 @@ Imports:
     openxlsx,
     tidytext,
     rvest,
-    xml2
+    xml2,
+    readr,
+    tidyr

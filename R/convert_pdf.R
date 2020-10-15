@@ -35,14 +35,14 @@ convert_pdf <- function(.dir) {
   spdf_to_txt_line <- purrr::safely(pdf_to_txt_line)
   
   lst <- purrr::map(
-    .x = set_names(fil_pdf$path_pdf, fil_pdf$doc_id), 
+    .x = purrr::set_names(fil_pdf$path_pdf, fil_pdf$doc_id), 
     .f = ~ spdf_to_txt_line(.dir, .x)
   ) %>% purrr::transpose()
   
   err <- purrr::compact(lst$error) %>%
     tibble::enframe() %>%
     dplyr::mutate(
-      message = map_chr(value, ~.x[[1]]),
+      message = purrr::map_chr(value, ~.x[[1]]),
       query_time = Sys.time()
     ) %>%
     dplyr::select(doc_id = name, message, query_time)

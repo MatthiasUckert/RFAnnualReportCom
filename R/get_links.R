@@ -4,13 +4,13 @@ get_links <- function(.tab_row, .col_url, .col_id, .col_ticker) {
     rvest::html_attr("href") %>%
     tibble::enframe()
   
-  expand_grid(.tab_row, tab_links) %>%
+  tidyr::expand_grid(.tab_row, tab_links) %>%
     dplyr::filter(endsWith(value, "pdf")) %>%
     dplyr::mutate(
       year = as.integer(stringi::stri_extract_last_regex(value, "\\d{4}")),
       link = xml2::url_absolute(value, "https://www.annualreports.com"),
       name_orig = gsub(".pdf", "", basename(link)),
-      name_save = paste({{.col_id}}, {{.col_ticker}}, year, sep = "_"),
+      name_save = paste("AR", {{.col_id}}, {{.col_ticker}}, year, sep = "_"),
       query_time = Sys.time()
     ) %>% dplyr::select(-value, -name)
 }
@@ -33,19 +33,19 @@ get_links <- function(.tab_row, .col_url, .col_id, .col_ticker) {
 get_links_map <- function(.tab, .col_url, .col_id, .col_ticker, .dir) {
   
   # Create Directories
-  .dir_store <- dpath(.dir, "store")
+  .dir_store <- dpath(.dir, "store", type = "d")
   
   # Read Processed Files
-  .path_links_res <- file.path(.dir_store, "res.rds")
+  .path_links_res <- dpath(.dir_store, "res.rds")
   if (file.exists(file.path(.path_links_res))) {
-    tab_prc_res <- read_rds(.path_links_res)
+    tab_prc_res <- readr::read_rds(.path_links_res)
   } else {
     tab_prc_res <- tibble::tibble({{.col_id}} := NA_character_, .rows = 0)
   }
   
-  .path_links_err <- file.path(.dir_store, "err.rds")
+  .path_links_err <- dpath(.dir_store, "err.rds")
   if (file.exists(file.path(.path_links_err))) {
-    tab_prc_err <- read_rds(.path_links_err)
+    tab_prc_err <- readr::read_rds(.path_links_err)
   } else {
     tab_prc_err <- tibble::tibble({{.col_id}} := NA_character_, .rows = 0)
   }
